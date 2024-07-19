@@ -1,11 +1,15 @@
-# calculator
+# Simple Calculator
 
-Made calculator for only two numbers 
+This is a simple command-line calculator program written in C. It supports basic arithmetic operations (+, -, *, /, %, ^) between two numbers.
 
-The features are :
+## Features
 
-1. Addition for two numbers
-2. substraction for two numbers
-3. multiplication for two numbers
-4. division for two numbers
-5. moddivision for two numbers 
+- Accepts equations in the format: `a + b`, `a - b`, `a * b`, `a / b`, `a % b`, `a ^ b`
+- Supports both positive and negative numbers
+- Displays results with appropriate colors:
+  - Green for positive results
+  - Red for errors (e.g., division by zero, invalid input)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
