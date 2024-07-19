@@ -1,91 +1,118 @@
 #include <stdio.h>
+#include <windows.h>
+#include <math.h>
+#include <stdbool.h>
 
-// Function to perform addition
-double add(double a, double b) {
-    return a + b;
-}
+void setcolor(int color);
+double evaluate(char equation[]);
+void display(double result);
 
-// Function to perform subtraction
-double subtract(double a, double b) {
-    return a - b;
-}
+int main()
+{
+    char equation[100]; // Array to hold the equation string
+    double result;
 
-// Function to perform multiplication
-double multiply(double a, double b) {
-    return a * b;
-}
+    printf("Welcome to the calculator!\n");
+    while (true)
+    {
+    
+        printf("\nEnter an equation ('a + b', 'a - b', 'a * b', 'a / b', 'a %% b', 'a ^ b'):\n");
+        printf("Type 'exit' to quit.\n");
+        printf("\nEnter equation: ");
+        fgets(equation, sizeof(equation), stdin);
 
-// Function to perform division
-double divide(double a, double b) {
-    if (b != 0) {
-        return a / b;
-    } else {
-        printf("Error: Division by zero is not allowed.\n");
-        return 0;
-    }
-}
+        // Remove newline character from fgets input
+        if (equation[strlen(equation) - 1] == '\n')
+            equation[strlen(equation) - 1] = '\0';
 
-// Function to perform modulus division
-int moddivision(int a, int b) {
-    if (b != 0) {
-        return a % b;
-    } else {
-        printf("Error: Division by zero is not allowed.\n");
-        return 0;
-    }
-}
-
-int main() {
-    double num1, num2;
-    int intNum1, intNum2;
-    int choice;
-
-    printf("Welcome to the simple calculator!\n");
-
-    while (1) {
-        printf("\nChoose an operation:\n");
-        printf("1. Addition (+)\n");
-        printf("2. Subtraction (-)\n");
-        printf("3. Multiplication (*)\n");
-        printf("4. Division (/)\n");
-        printf("5. Modulus Division (%%)\n");
-        printf("0. Exit\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-
-        if (choice == 0) {
+        // Check for exit condition
+        if (strcmp(equation, "exit") == 0)
+        {
             printf("Exiting the calculator. Thank you!\n");
             break;
         }
 
-        printf("Enter first number: ");
-        scanf("%lf", &num1);
-        printf("Enter second number: ");
-        scanf("%lf", &num2);
-
-        switch (choice) {
-            case 1:
-                printf("Result: %.2lf\n", add(num1, num2));
-                break;
-            case 2:
-                printf("Result: %.2lf\n", subtract(num1, num2));
-                break;
-            case 3:
-                printf("Result: %.2lf\n", multiply(num1, num2));
-                break;
-            case 4:
-                printf("Result: %.2lf\n", divide(num1, num2));
-                break;
-            case 5:
-                intNum1 = (int)num1;
-                intNum2 = (int)num2;
-                printf("Result: %d\n", moddivision(intNum1, intNum2));
-                break;
-            default:
-                printf("Invalid choice. Please select a valid operation.\n");
-        }
+        // Evaluate the equation and display the result
+        result = evaluate(equation);
+        display(result);
     }
 
     return 0;
 }
 
+void setcolor(int color)
+{
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, color);
+}
+
+double evaluate(char equation[])
+{
+    double result = 0.0;
+    char operator;
+    double operand1, operand2;
+
+    // Scan the equation string to extract operands and operator
+    int scanned = sscanf(equation, "%lf %c %lf", &operand1, &operator, &operand2);
+
+    // Check if sscanf successfully scanned 3 items
+    if (scanned != 3)
+    {
+        printf("Invalid input format. Please use 'a operator b'.\n");
+        return 0.0;
+    }
+
+    // Perform the calculation based on the operator
+    switch (operator)
+    {
+    case '+':
+        result = operand1 + operand2;
+        break;
+    case '-':
+        result = operand1 - operand2;
+        break;
+    case '*':
+        result = operand1 * operand2;
+        break;
+    case '/':
+        if (operand2 != 0)
+            result = operand1 / operand2;
+        else
+        {
+            setcolor(12); // Red color for error
+            printf("Error: Division by zero is not allowed.\n");
+            return 0.0;
+        }
+        break;
+    case '%':
+        if (operand2 != 0)
+            result = fmod(operand1, operand2); // fmod for floating-point modulus
+        else
+        {
+            setcolor(12); // Red color for error
+            printf("Error: Division by zero is not allowed.\n");
+            return 0.0;
+        }
+        break;
+    case '^':
+        result = pow(operand1, operand2);
+        break;
+    default:
+        setcolor(12); // Red color for error
+        printf("Invalid operator '%c'. Please use one of '+', '-', '*', '/', '%%', '^'.\n", operator);
+        return 0.0;
+    }
+
+    return result;
+}
+
+void display(double result)
+{
+    if (result >= 0)
+        setcolor(10); // Green color for positive results
+    else
+        setcolor(12); // Red color for negative results
+
+    printf("Result: %.2lf\n", result);
+    setcolor(7); // Reset color to default (white)
+}
